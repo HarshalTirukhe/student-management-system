@@ -3,10 +3,7 @@ import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 import { AppError } from "../utils/AppError.js";
 
-export const registerUser = async (
-  email: string,
-  password: string
-) => {
+export const registerUser = async (email: string, password: string) => {
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
@@ -32,22 +29,19 @@ export const registerUser = async (
   };
 };
 
-export const loginUser = async (
-  email: string,
-  password: string
-) => {
+export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
   if (!user) {
-    throw new AppError("Invalid email or password", 401);
+    throw new AppError(
+      "You are not registered. Please create an account first.",
+      401,
+    );
   }
 
-  const passwordMatches = await bcrypt.compare(
-    password,
-    user.passwordHash
-  );
+  const passwordMatches = await bcrypt.compare(password, user.passwordHash);
 
   if (!passwordMatches) {
     throw new AppError("Invalid email or password", 401);
@@ -67,7 +61,7 @@ export const loginUser = async (
     secret,
     {
       expiresIn: "1h",
-    }
+    },
   );
 
   return {

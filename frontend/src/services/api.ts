@@ -31,7 +31,7 @@ async function request<T>(
   }
 
   // Handle unauthorized / expired session
-  if (response.status === 401) {
+  if (response.status === 401 && !endpoint.startsWith("/auth/")) {
     window.dispatchEvent(new Event("session-expired"));
     throw new Error("SESSION_EXPIRED");
   }
